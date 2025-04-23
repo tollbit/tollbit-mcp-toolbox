@@ -1,6 +1,6 @@
 {
   "name": "@tollbit/mcp-toolbox",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
   "main": "index.js",
   "publishConfig": {
@@ -17,9 +17,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.10.2"
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "command-line-args": "^6.0.1"
   },
   "bundleDependencies": [
-    "@modelcontextprotocol/sdk"
+    "@modelcontextprotocol/sdk",
+    "command-line-args"
   ]
 }

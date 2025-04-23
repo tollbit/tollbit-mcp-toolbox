@@ -8,12 +8,18 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import commandLineArgs from "command-line-args";
 
 const TB_MCP_HOST = process.env.TB_MCP_HOST || "https://mcp.tollbit.dev/mcp";
-const API_KEY = process.env.TB_API_KEY;
 
-if (!API_KEY) {
-  console.error("API key not provided. Exiting...");
+const optionDefinitions = [{ name: "api-key", alias: "k", type: String }];
+const options = commandLineArgs(optionDefinitions);
+
+const API_KEY = options["api-key"];
+if (!options["api-key"]) {
+  console.error(
+    "API key is required, pass it using `--api-key my-secret-api-key`. Exiting..."
+  );
   process.exit(1);
 }
 
