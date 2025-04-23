@@ -1,7 +1,14 @@
 {
   "name": "@tollbit/mcp-toolbox",
-  "version": "1.0.0",
+  "version": "1.0.7",
+  "type": "module",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "mcp-toolbox": "./index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,8 +17,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.10.2",
-    "node-fetch": "^3.3.2",
-    "zod": "^3.24.3"
-  }
+    "@modelcontextprotocol/sdk": "^1.10.2"
+  },
+  "bundleDependencies": [
+    "@modelcontextprotocol/sdk"
+  ]
 }
