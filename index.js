@@ -47,47 +47,64 @@ let toolsCache = [];
 let toolsCacheTimestamp = 0;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-var client = new Client({
-  name: "local-mcp-bridge",
-  version: "1.0.0",
-});
-var transport = undefined;
+var serverClient, serverTransport;
+async function connectToServer() {
+  serverClient = new Client({
+    name: "local-mcp-bridge",
+    version: "1.0.0",
+  });
+  serverTransport = new StreamableHTTPClientTransport(new URL(TB_MCP_HOST), {
+    requestInit: {
+      headers: {
+        "x-api-key": API_KEY,
+      },
+    },
+  });
+  await serverClient.connect(serverTransport);
+}
+
+var toolNameMapping = {};
 
 // Set up MCP server handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  console.error("Handling tools/list request");
-  if (transport === undefined) {
-    transport = new StreamableHTTPClientTransport(new URL(TB_MCP_HOST), {
-      requestInit: {
-        headers: {
-          "x-api-key": API_KEY,
-        },
-      },
-    });
-    await client.connect(transport);
-  }
-
-  console.error("Handling tools/list request");
-
   try {
-    const listToolsResponse = await client.listTools();
+    console.error("Handling tools/list request");
+    try {
+      const listToolsResponse = await serverClient.listTools();
 
-    console.error("tools received:", listToolsResponse);
+      const generateClaudeSafeName = (name) => {
+        return name.replace(/[^a-zA-Z0-9_]/g, "_");
+      };
 
-    return { tools: listToolsResponse.tools };
-  } catch (error) {
-    console.error("error", error);
-    return { tools: [] };
+      for (const tool of listToolsResponse.tools) {
+        var claudeName = generateClaudeSafeName(tool.name);
+        toolNameMapping[claudeName] = tool.name;
+        tool.name = claudeName;
+      }
+
+      console.error("tools received:", listToolsResponse);
+
+      return { tools: listToolsResponse.tools };
+    } catch (error) {
+      console.error("error", error);
+      return { tools: [] };
+    }
+  } catch (e) {
+    console.error("error in list tools call", e);
   }
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const { name, arguments: args } = request.params;
-    console.error(`Forwarding tool call: ${name}`, args);
+    console.error(
+      `Forwarding tool call: ${name} (${toolNameMapping[name]})`,
+      args
+    );
 
-    const result = await client.callTool({
-      name,
+    const realName = toolNameMapping[name];
+    const result = await serverClient.callTool({
+      name: realName,
       arguments: args,
     });
     console.error("result was received:", result);
@@ -124,6 +141,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Start the server
 async function start() {
+  await connectToServer();
   try {
     console.error("Starting server initialization...");
     console.error("Process ID:", process.pid);
