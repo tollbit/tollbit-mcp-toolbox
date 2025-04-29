@@ -31,7 +31,19 @@ try {
     throw new Error("Error: --api-key parameter is required.");
   }
 
-  const fileData = fs.readFileSync(CLAUDE_DESKTOP_CONFIG, "utf-8");
+  var fileData = null;
+  try {
+    fileData = fs.readFileSync(CLAUDE_DESKTOP_CONFIG, "utf-8");
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      console.warn(
+        `WARN: claude_desktop_config.json file not found. Initializing the file at ${CLAUDE_DESKTOP_CONFIG}.`
+      );
+    }
+
+    fileData = JSON.stringify({});
+  }
+  // const fileData = fs.readFileSync(CLAUDE_DESKTOP_CONFIG, "utf-8");
   const config = JSON.parse(fileData);
 
   if (config.hasOwnProperty("mcpServers")) {
