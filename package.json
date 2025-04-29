@@ -1,6 +1,6 @@
 {
   "name": "@tollbit/mcp-toolbox",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "type": "module",
   "main": "dist/index.js",
   "publishConfig": {
