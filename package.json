@@ -2,15 +2,18 @@
   "name": "@tollbit/mcp-toolbox",
   "version": "1.0.9",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
   "publishConfig": {
     "access": "public"
   },
   "bin": {
-    "mcp-toolbox": "./index.js"
+    "mcp-toolbox": "./dist/index.js",
+    "install_claude": "./dist/install/install_mac_os.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:installs",
+    "build:installs": "tsc && chmod +x dist/scripts/install_mac_os.js"
   },
   "keywords": [],
   "author": "",
@@ -23,5 +26,9 @@
   "bundleDependencies": [
     "@modelcontextprotocol/sdk",
     "command-line-args"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  }
 }
