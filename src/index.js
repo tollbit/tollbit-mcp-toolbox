@@ -10,9 +10,16 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import commandLineArgs from "command-line-args";
 
-const TB_MCP_HOST = process.env.TB_MCP_HOST || "https://mcp.tollbit.dev/mcp";
+const TB_MCP_HOST = process.env.TB_MCP_HOST || "https://mcp.tollbit.dev/";
 
-const optionDefinitions = [{ name: "api-key", alias: "k", type: String }];
+const optionDefinitions = [
+  { name: "api-key", alias: "k", type: String },
+  {
+    name: "toolbox-id",
+    alias: "t",
+    type: String,
+  },
+];
 const options = commandLineArgs(optionDefinitions);
 
 const API_KEY = options["api-key"];
@@ -23,8 +30,10 @@ if (!options["api-key"]) {
   process.exit(1);
 }
 
+const TOOLBOX_ID = options["toolbox-id"] || "mcp";
+
 console.error("Starting dynamic MCP bridge...");
-console.error("Dynamic server URL:", TB_MCP_HOST);
+console.error("Dynamic server URL:", TB_MCP_HOST + TOOLBOX_ID);
 
 // Initialize the MCP server
 console.error("Initializing local MCP server...");
@@ -53,13 +62,16 @@ async function connectToServer() {
     name: "local-mcp-bridge",
     version: "1.0.0",
   });
-  serverTransport = new StreamableHTTPClientTransport(new URL(TB_MCP_HOST), {
-    requestInit: {
-      headers: {
-        "x-api-key": API_KEY,
+  serverTransport = new StreamableHTTPClientTransport(
+    new URL(TB_MCP_HOST + TOOLBOX_ID),
+    {
+      requestInit: {
+        headers: {
+          "x-api-key": API_KEY,
+        },
       },
-    },
-  });
+    }
+  );
   await serverClient.connect(serverTransport);
 }
 
