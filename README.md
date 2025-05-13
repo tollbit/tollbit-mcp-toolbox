@@ -19,6 +19,8 @@ For more details on usage, please see our docs: https://docs.tollbit.dev/quickst
 
 - `--api-key` **(required)**: your API key, which you can find in our [developer portal](https://hack.tollb.it/)
 
+- `--toolbox-id` *(optional)*: the id of the toolbox you'd like to use, which you can find in the [developer portal](https://hack.tollb.it/mcp)  
+
 ### Environment Variables
 
 - `TB_MCP_HOST` _(optional)_: an optional URL for the host MCP server (default: https://mcp.tollbit.dev/mcp)
@@ -32,3 +34,5 @@ To support stress free installations, you can use our preconfigured install scri
 ```
 npx -p @tollbit/mcp-toolbox install_claude --api-key <your_api_key>
 ```
+
+You can also optionally include the `--toolbox-id` in this command as well.
