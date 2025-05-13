@@ -3,8 +3,11 @@ import * as fs from "fs";
 import { homedir } from "os";
 
 // Parse the --tollbit-api-key parameter
-function parseArgs(args: string[]): { tollbitApiKey?: string } {
-  const result: { tollbitApiKey?: string } = {};
+function parseArgs(args: string[]): {
+  tollbitApiKey?: string;
+  toolboxId?: string;
+} {
+  const result: { tollbitApiKey?: string; toolboxId?: string } = {};
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--api-key") {
       if (i + 1 < args.length) {
@@ -12,6 +15,13 @@ function parseArgs(args: string[]): { tollbitApiKey?: string } {
         i++; // Skip the value
       } else {
         throw new Error("Error: --api-key parameter requires a value.");
+      }
+    } else if (args[i] === "--toolbox-id") {
+      if (i + 1 < args.length) {
+        result.toolboxId = args[i + 1];
+        i++; // Skip the value
+      } else {
+        throw new Error("Error: --toolbox-id parameter requires a value.");
       }
     } else {
       throw new Error(`Unknown parameter passed: ${args[i]}`);
@@ -24,7 +34,7 @@ const CLAUDE_DESKTOP_CONFIG = `${homedir()}/Library/Application Support/Claude/c
 
 try {
   const args = process.argv.slice(2); // Skip the first two arguments (node and script path)
-  const { tollbitApiKey } = parseArgs(args);
+  const { tollbitApiKey, toolboxId } = parseArgs(args);
 
   // Check if the API key was provided
   if (!tollbitApiKey) {
@@ -60,6 +70,7 @@ try {
         "@tollbit/mcp-toolbox",
         "--api-key",
         `${tollbitApiKey}`,
+        ...(toolboxId ? ["--toolbox-id", `${toolboxId}`] : []),
       ];
     } else {
       console.log("Adding new server configuration for @tollbit/mcp-toolbox");
